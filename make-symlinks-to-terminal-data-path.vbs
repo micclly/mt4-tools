@@ -21,17 +21,21 @@ Else
     appdataDirectory = arguments(1)
 End If
 
-Dim WMI, OS, Value, Shell
+Dim WMI, OS, Value
 
+Set WMI = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\.\root\cimv2")
+Set OS = WMI.ExecQuery("SELECT *FROM Win32_OperatingSystem")
+For Each Value in OS
+    If left(Value.Version, 3) < 6.0 Then
+        MsgBox "This script cannot be run earlier to Windows Vista", 16
+        WScript.Quit
+    End If
+Next
+
+Dim app
 Do While WScript.Arguments.Count = 0 and WScript.Version >= 5.7
-    Set WMI = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\.\root\cimv2")
-    Set OS = WMI.ExecQuery("SELECT *FROM Win32_OperatingSystem")
-    For Each Value in OS
-    If left(Value.Version, 3) < 6.0 Then Exit Do
-    Next
-
-    Set Shell = CreateObject("Shell.Application")
-    Shell.ShellExecute "wscript.exe", """" & _
+    Set app = CreateObject("Shell.Application")
+    app.ShellExecute "wscript.exe", """" & _
         WScript.ScriptFullName & """ """ & currentDirectory & _
         """ """ & appdataDirectory & """", "", "runas"
 
@@ -82,4 +86,4 @@ For Each f In subFolders
     End If
 Next
 
-
+MsgBox "Finished"
