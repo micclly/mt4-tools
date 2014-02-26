@@ -1,4 +1,4 @@
-' Create symbolic link to MT4(build 600 and later) and MT5
+' Create symbolic link to MT4(build 600 and later) and MT5 terminal data path
 ' License: GNU General Public License Version 3
 Option Explicit
 
@@ -21,13 +21,13 @@ Else
     appdataDirectory = arguments(1)
 End If
 
-Dim WMI, OS, Value
+Dim wmi, os, value
 
-Set WMI = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\.\root\cimv2")
-Set OS = WMI.ExecQuery("SELECT *FROM Win32_OperatingSystem")
-For Each Value in OS
-    If left(Value.Version, 3) < 6.0 Then
-        MsgBox "This script cannot be run earlier to Windows Vista", 16
+Set wmi = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\.\root\cimv2")
+Set os = wmi.ExecQuery("SELECT *FROM Win32_OperatingSystem")
+For Each value in os
+    If left(value.Version, 3) < 6.0 Then
+        MsgBox "This script cannot be run on earlier to Windows Vista", 16
         WScript.Quit
     End If
 Next
@@ -81,7 +81,7 @@ For Each f In subFolders
     If fso.FileExists(originTxt) Then
         symlink = CreateSymbolicLink(path, GetTerminalName(originTxt))
         If symlink = "" Then
-            MsgBox("Failed to create symlink to " & path)
+            MsgBox "Failed to create symlink to " & path, 16
         End If
     End If
 Next
